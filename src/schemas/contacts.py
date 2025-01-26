@@ -2,7 +2,7 @@ from datetime import datetime, date
 from typing import List, Optional
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
 
-from src.messages import messages
+from src.conf import messages
 
 
 class ContactBase(BaseModel):
@@ -17,6 +17,12 @@ class ContactBase(BaseModel):
     def validate_birthday(cls, v):
         if v > date.today():
             raise ValueError(messages.INVALID_BIRTHDAY)
+        return v
+
+    @field_validator("phone_number")
+    def validate_phone_number(cls, v):
+        if not v.isdigit():
+            raise ValueError(messages.INVALID_PHONE_NUMBER)
         return v
 
 

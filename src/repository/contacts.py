@@ -61,7 +61,7 @@ class ContactRepository:
                     Contact.last_name.ilike(f"%{search}%"),
                     Contact.email.ilike(f"%{search}%"),
                     Contact.additional_data.ilike(f"%{search}%"),
-                    Contact.phone.ilike(f"%{search}%"),
+                    Contact.phone_number.ilike(f"%{search}%"),
                 )
             )
             .offset(skip)
