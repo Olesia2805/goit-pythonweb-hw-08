@@ -58,20 +58,17 @@ class ContactRepository:
         contacts = await self.db.execute(stmt)
         return contacts.scalars().all()
     
-    async def upcoming_birthdays(self, days: int) -> List[Contact]:
+    async def upcoming_birthdays(self, days: int = 7) -> List[Contact]:
         today = func.current_date()
-        future_date = func.current_date() + timedelta(days=days)
-        print(days)
-        print(today)
-        print(future_date)
+        future_date = today + timedelta(days=days)
         stmt = select(Contact).filter(
-            and_(     
-                or_(
+            or_(     
+                and_(
                     extract('month', Contact.birthday) == extract('month', today),
-                    extract('month', Contact.birthday) == extract('month', future_date)
+                    extract('day', Contact.birthday) >= extract('day', today)
                 ),
-                or_(
-                    extract('day', Contact.birthday) >= extract('day', today),
+                and_(
+                    extract('month', Contact.birthday) == extract('month', future_date),
                     extract('day', Contact.birthday) <= extract('day', future_date)
                 )
             )
