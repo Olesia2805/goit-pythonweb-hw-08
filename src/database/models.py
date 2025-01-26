@@ -5,13 +5,13 @@ from sqlalchemy.orm import relationship, mapped_column, Mapped, DeclarativeBase
 from sqlalchemy.sql.schema import ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.sql.sqltypes import DateTime, Date
 
+
 class Base(DeclarativeBase):
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=func.now(), onupdate=func.now()
     )
+
 
 class Contact(Base):
     __tablename__ = "contacts"

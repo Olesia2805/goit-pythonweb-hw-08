@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.repository.contacts import ContactRepository
 from src.schemas.contacts import ContactBase, ContactResponse
 
+
 class ContactService:
     def __init__(self, db: AsyncSession):
         self.contact_repository = ContactRepository(db)
@@ -21,9 +22,9 @@ class ContactService:
 
     async def remove_contact(self, contact_id: int):
         return await self.contact_repository.remove_contact(contact_id)
-    
+
     async def search_contacts(self, search: str, skip: int, limit: int):
         return await self.contact_repository.search_contacts(search, skip, limit)
-    
+
     async def upcoming_birthdays(self, days: int):
         return await self.contact_repository.upcoming_birthdays(days)

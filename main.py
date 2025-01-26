@@ -11,9 +11,11 @@ app = FastAPI()
 app.include_router(utils.router, prefix="/api")
 app.include_router(contacts.router, prefix="/api")
 
+
 @app.get("/")
 async def root():
     return {"message": messages.WELCOME_MESSAGE}
+
 
 if __name__ == "__main__":
 

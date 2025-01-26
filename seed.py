@@ -11,6 +11,7 @@ fake = Faker()
 engine = create_async_engine(Config.DB_URL, echo=True)
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
+
 async def seed_database():
     async with async_session() as session:
         async with session.begin():
@@ -24,6 +25,7 @@ async def seed_database():
                     additional_data=fake.sentence(nb_words=3),
                 )
                 session.add(contact)
+
 
 if __name__ == "__main__":
 

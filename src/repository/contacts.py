@@ -8,6 +8,7 @@ from datetime import timedelta
 from src.database.models import Contact
 from src.schemas.contacts import ContactBase, ContactResponse
 
+
 class ContactRepository:
     def __init__(self, session: AsyncSession):
         self.db = session
@@ -36,7 +37,9 @@ class ContactRepository:
             await self.db.commit()
         return contact
 
-    async def update_contact(self, contact_id: int, body: ContactBase) -> Contact | None:
+    async def update_contact(
+        self, contact_id: int, body: ContactBase
+    ) -> Contact | None:
         contact = await self.get_contact_by_id(contact_id)
         if contact:
             for key, value in body.dict(exclude_unset=True).items():
@@ -46,31 +49,40 @@ class ContactRepository:
             await self.db.refresh(contact)
 
         return contact
-    
-    async def search_contacts(self, search: str, skip: int, limit: int) -> List[Contact]:
-        stmt = select(Contact).filter(or_(
-            Contact.first_name.ilike(f"%{search}%"), 
-            Contact.last_name.ilike(f"%{search}%"),
-            Contact.email.ilike(f"%{search}%"),
-            Contact.additional_data.ilike(f"%{search}%"),
-            Contact.phone.ilike(f"%{search}%")
-            )).offset(skip).limit(limit)
+
+    async def search_contacts(
+        self, search: str, skip: int, limit: int
+    ) -> List[Contact]:
+        stmt = (
+            select(Contact)
+            .filter(
+                or_(
+                    Contact.first_name.ilike(f"%{search}%"),
+                    Contact.last_name.ilike(f"%{search}%"),
+                    Contact.email.ilike(f"%{search}%"),
+                    Contact.additional_data.ilike(f"%{search}%"),
+                    Contact.phone.ilike(f"%{search}%"),
+                )
+            )
+            .offset(skip)
+            .limit(limit)
+        )
         contacts = await self.db.execute(stmt)
         return contacts.scalars().all()
-    
+
     async def upcoming_birthdays(self, days: int = 7) -> List[Contact]:
         today = func.current_date()
         future_date = today + timedelta(days=days)
         stmt = select(Contact).filter(
-            or_(     
+            or_(
                 and_(
-                    extract('month', Contact.birthday) == extract('month', today),
-                    extract('day', Contact.birthday) >= extract('day', today)
+                    extract("month", Contact.birthday) == extract("month", today),
+                    extract("day", Contact.birthday) >= extract("day", today),
                 ),
                 and_(
-                    extract('month', Contact.birthday) == extract('month', future_date),
-                    extract('day', Contact.birthday) <= extract('day', future_date)
-                )
+                    extract("month", Contact.birthday) == extract("month", future_date),
+                    extract("day", Contact.birthday) <= extract("day", future_date),
+                ),
             )
         )
         contacts = await self.db.execute(stmt)
